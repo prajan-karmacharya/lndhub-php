@@ -66,7 +66,7 @@ class Client
     }
   }
 
-  private function getInfo()
+  public function getInfo()
   {
     $data = $this->request("GET", "/getinfo", []);
     return [
@@ -76,7 +76,7 @@ class Client
     ];
   }
 
-  private function getBalance()
+  public function getBalance()
   {
     $data = $this->request("GET", "/balance", []);
     return [
