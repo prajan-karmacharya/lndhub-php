@@ -6,7 +6,7 @@ use GuzzleHttp;
 
 class Client
 {
-  
+
   private $client;
   private $access_token;
   private $refresh_token;
@@ -26,25 +26,6 @@ class Client
     return $this->authorize();
   }
 
-  private function request($method, $path, $body = null)
-  {
-    $headers = [
-      'Accept' => 'application/json',
-      'Content-Type' => 'application/json',
-      'Access-Control-Allow-Origin' => '*',
-      'Authorization' => "Bearer {$this->access_token}"
-    ];
-
-    $request = new GuzzleHttp\Psr7\Request($method, $path, $headers, $body);
-    $response = $this->client()->send($request);
-    if ($response->getStatusCode() >= 200 && $response->getStatusCode() < 300) {
-      $responseBody = $response->getBody()->getContents();
-      return json_decode($responseBody, true);
-    } else {
-      // raise exception
-    }
-  }
-
   private function authorize()
   {
     $headers = [
@@ -58,9 +39,29 @@ class Client
     if ($response->getStatusCode() >= 200 && $response->getStatusCode() < 300) {
       $responseBody = $response->getBody()->getContents();
       $data = json_decode($responseBody, true);
-      $this->access_token = $data->access_token;
-      $this->refresh_token = $data->refresh_token;
+      $this->access_token = $data['access_token'];
+      $this->refresh_token = $data['refresh_token'];
       return $data;
+    } else {
+      // raise exception
+    }
+  }
+
+  private function request($method, $path, $body = null)
+  {
+    $headers = [
+      'Accept' => 'application/json',
+      'Content-Type' => 'application/json',
+      'Access-Control-Allow-Origin' => '*',
+      'Authorization' => "Bearer {$this->access_token}"
+    ];
+
+    $requestBody = $body ? json_encode($body) : null;
+    $request = new GuzzleHttp\Psr7\Request($method, $path, $headers, $requestBody);
+    $response = $this->client()->send($request);
+    if ($response->getStatusCode() >= 200 && $response->getStatusCode() < 300) {
+      $responseBody = $response->getBody()->getContents();
+      return json_decode($responseBody, true);
     } else {
       // raise exception
     }
@@ -68,20 +69,20 @@ class Client
 
   public function getInfo()
   {
-    $data = $this->request("GET", "/getinfo", []);
+    $data = $this->request("GET", "/getinfo");
     return [
       "data" => [
-        "alias" => $data->alias
+        "alias" => $data['alias']
       ]
     ];
   }
 
   public function getBalance()
   {
-    $data = $this->request("GET", "/balance", []);
+    $data = $this->request("GET", "/balance");
     return [
       "data" => [
-        "balance" => $data->BTC->AvailableBalance
+        "balance" => $data['BTC']['AvailableBalance']
       ]
     ];
   }
@@ -94,5 +95,10 @@ class Client
     $options = ['base_uri' => $this->url];
     $this->client = new GuzzleHttp\Client($options);
     return $this->client;
+  }
+
+  public function isAuthenticated()
+  {
+    return !empty($this->access_token);
   }
 }
