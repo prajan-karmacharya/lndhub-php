@@ -23,9 +23,9 @@ final class EmailTest extends TestCase
     public function testCanAuthorize(): void
     {
         $client = $this->client();
-        $this->assertFalse($client->isAuthenticated());
+        $this->assertFalse($client->isConnectionValid());
         $client->init();
-        $this->assertTrue($client->isAuthenticated());
+        $this->assertTrue($client->isConnectionValid());
     }
 
     public function testCanGetBalance(): void
@@ -40,5 +40,30 @@ final class EmailTest extends TestCase
         $client = $this->client();
         $client->init();
         $this->assertIsString($client->getInfo()['data']['alias']);
+    }
+
+    public function testCanAddInvoice(): void
+    {
+        $client = $this->client();
+        $client->init();
+        $response = $client->addInvoice([
+            'value'=> 23,
+            'memo'=> 'test invoice'
+        ]);
+        $this->assertIsString($response['data']['paymentRequest']);
+        $this->assertIsString($response['data']['rHash']);
+    }
+
+    public function testCanGetInvoice(): void
+    {
+        $client = $this->client();
+        $client->init();
+        $response = $client->addInvoice([
+            'value'=> 23,
+            'memo'=> 'test invoice'
+        ]);
+        $invoice = $client->getInvoice($response['data']['rHash']);
+
+        $this->assertArrayHasKey('settled', $invoice);
     }
 }

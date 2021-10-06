@@ -3,8 +3,9 @@
 namespace LNDHub;
 
 use GuzzleHttp;
+use LNDHub\Contracts\LNDHubClient;
 
-class Client
+class Client implements LNDHubClient
 {
 
   private $client;
@@ -67,7 +68,7 @@ class Client
     }
   }
 
-  public function getInfo()
+  public function getInfo(): array
   {
     $data = $this->request("GET", "/getinfo");
     return [
@@ -97,8 +98,40 @@ class Client
     return $this->client;
   }
 
-  public function isAuthenticated()
+  public function isConnectionValid(): bool
   {
     return !empty($this->access_token);
+  }
+
+  public function addInvoice($invoice): array
+  {
+    $data = $this->request("POST", "/addinvoice", [
+      'amt' => $invoice['value'],
+      'memo' => $invoice['memo']
+    ]);
+    if (is_array($data) && $data['r_hash']['type'] === "Buffer") {
+      $data['r_hash'] = bin2hex(join(array_map("chr", $data["r_hash"]["data"])));
+    }
+
+    return [
+      'data' => [
+        'paymentRequest' => $data['payment_request'],
+        'rHash' => $data['r_hash']
+      ]
+    ];
+  }
+
+  public function getInvoice($checkingId): array
+  {
+    $invoice = $this->request("GET", "/checkpayment/{$checkingId}");
+
+    $invoice['settled'] = $invoice['paid']; //kinda mimic lnd
+    return $invoice;
+  }
+
+  public function isInvoicePaid($checkingId): bool
+  {
+    $invoice = $this->getInvoice($checkingId);
+    return $invoice['settled'];
   }
 }
