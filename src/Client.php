@@ -72,9 +72,7 @@ class Client implements LNDHubClient
   {
     $data = $this->request("GET", "/getinfo");
     return [
-      "data" => [
-        "alias" => $data['alias']
-      ]
+      "alias" => $data['alias']
     ];
   }
 
@@ -82,9 +80,7 @@ class Client implements LNDHubClient
   {
     $data = $this->request("GET", "/balance");
     return [
-      "data" => [
-        "balance" => $data['BTC']['AvailableBalance']
-      ]
+      "balance" => $data['BTC']['AvailableBalance']
     ];
   }
 
@@ -112,20 +108,14 @@ class Client implements LNDHubClient
     if (is_array($data) && $data['r_hash']['type'] === "Buffer") {
       $data['r_hash'] = bin2hex(join(array_map("chr", $data["r_hash"]["data"])));
     }
-
-    return [
-      'data' => [
-        'paymentRequest' => $data['payment_request'],
-        'rHash' => $data['r_hash']
-      ]
-    ];
+    return $data;
   }
 
   public function getInvoice($checkingId): array
   {
     $invoice = $this->request("GET", "/checkpayment/{$checkingId}");
 
-    $invoice['settled'] = $invoice['paid']; //kinda mimic lnd
+    $invoice['settled'] = $invoice['paid'] ? true : false; //kinda mimic lnd
     return $invoice;
   }
 

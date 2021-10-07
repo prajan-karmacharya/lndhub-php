@@ -32,14 +32,14 @@ final class EmailTest extends TestCase
     {
         $client = $this->client();
         $client->init();
-        $this->assertIsNumeric($client->getBalance()['data']['balance']);
+        $this->assertIsNumeric($client->getBalance()['balance']);
     }
 
     public function testCanGetInfo(): void
     {
         $client = $this->client();
         $client->init();
-        $this->assertIsString($client->getInfo()['data']['alias']);
+        $this->assertIsString($client->getInfo()['alias']);
     }
 
     public function testCanAddInvoice(): void
@@ -50,8 +50,9 @@ final class EmailTest extends TestCase
             'value'=> 23,
             'memo'=> 'test invoice'
         ]);
-        $this->assertIsString($response['data']['paymentRequest']);
-        $this->assertIsString($response['data']['rHash']);
+        // print_r($response);
+        $this->assertIsString($response['payment_request']);
+        $this->assertIsString($response['r_hash']);
     }
 
     public function testCanGetInvoice(): void
@@ -62,7 +63,7 @@ final class EmailTest extends TestCase
             'value'=> 23,
             'memo'=> 'test invoice'
         ]);
-        $invoice = $client->getInvoice($response['data']['rHash']);
+        $invoice = $client->getInvoice($response['r_hash']);
 
         $this->assertArrayHasKey('settled', $invoice);
     }
