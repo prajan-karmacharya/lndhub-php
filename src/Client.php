@@ -71,17 +71,14 @@ class Client implements LNDHubClient
   public function getInfo(): array
   {
     $data = $this->request("GET", "/getinfo");
-    return [
-      "alias" => $data['alias']
-    ];
+    return $data;
   }
 
   public function getBalance()
   {
     $data = $this->request("GET", "/balance");
-    return [
-      "balance" => $data['BTC']['AvailableBalance']
-    ];
+    $data['balance'] = $data['BTC']['AvailableBalance'];
+    return $data;
   }
 
   private function client()
