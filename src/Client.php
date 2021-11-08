@@ -2,9 +2,10 @@
 
 namespace LNDHub;
 
-use GuzzleHttp;
-use LNDHub\Contracts\LNDHubClient;
+require_once 'contracts/LndHubClient.php';
 
+use \GuzzleHttp;
+use \LNDHub\Contracts\LNDHubClient;
 class Client implements LNDHubClient
 {
 
