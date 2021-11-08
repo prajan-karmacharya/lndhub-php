@@ -2,7 +2,6 @@
 
 namespace LNDHub;
 
-require_once 'vendor/autoload.php';
 require_once 'contracts/LndHubClient.php';
 
 use \GuzzleHttp;
