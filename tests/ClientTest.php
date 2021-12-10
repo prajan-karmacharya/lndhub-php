@@ -68,7 +68,7 @@ final class EmailTest extends TestCase
         $this->assertArrayHasKey('settled', $invoice);
     }
 
-    public function testCaCreateWallet(): void
+    public function testCanCreateWallet(): void
     {
         $data = Client::createWallet("https://wallets.getalby.com", "bluewallet");
         $this->assertArrayHasKey('login', $data);
