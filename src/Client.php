@@ -6,6 +6,7 @@ require_once 'contracts/LndHubClient.php';
 
 use \GuzzleHttp;
 use \LNDHub\Contracts\LNDHubClient;
+
 class Client implements LNDHubClient
 {
 
@@ -121,5 +122,28 @@ class Client implements LNDHubClient
   {
     $invoice = $this->getInvoice($checkingId);
     return $invoice['settled'];
+  }
+
+  public static function createWallet($url, $partnerId, $accountType = "common")
+  {
+    $headers = [
+      'Accept' => 'application/json',
+      'Content-Type' => 'application/json',
+      'Access-Control-Allow-Origin' => '*'
+    ];
+    $body = ["lpartnerid" => $partnerId, "accounttype" => $accountType];
+    $request = new GuzzleHttp\Psr7\Request('POST', '/create', $headers, json_encode($body));
+    $client = new GuzzleHttp\Client(['base_uri' => $url]);
+    $response = $client->send($request);
+    if ($response->getStatusCode() >= 200 && $response->getStatusCode() < 300) {
+      $responseBody = $response->getBody()->getContents();
+      $data = json_decode($responseBody, true);
+      return array_merge(
+        $data,
+        ["url" => $url]
+      );
+    } else {
+      // raise exception
+    }
   }
 }
