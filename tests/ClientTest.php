@@ -47,8 +47,8 @@ final class EmailTest extends TestCase
         $client = $this->client();
         $client->init();
         $response = $client->addInvoice([
-            'value'=> 23,
-            'memo'=> 'test invoice'
+            'value' => 23,
+            'memo' => 'test invoice'
         ]);
         // print_r($response);
         $this->assertIsString($response['payment_request']);
@@ -60,11 +60,19 @@ final class EmailTest extends TestCase
         $client = $this->client();
         $client->init();
         $response = $client->addInvoice([
-            'value'=> 23,
-            'memo'=> 'test invoice'
+            'value' => 23,
+            'memo' => 'test invoice'
         ]);
         $invoice = $client->getInvoice($response['r_hash']);
 
         $this->assertArrayHasKey('settled', $invoice);
+    }
+
+    public function testCanCreateWallet(): void
+    {
+        $data = Client::createWallet("https://wallets.getalby.com", "bluewallet");
+        $this->assertArrayHasKey('login', $data);
+        $this->assertArrayHasKey('password', $data);
+        $this->assertArrayHasKey('url', $data);
     }
 }
