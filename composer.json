@@ -3,7 +3,7 @@
     "description": "A client for the LNDHub API",
     "type": "library",
     "require": {
-        "php": "^7.0",
+        "php": ">=7.0.0",
         "guzzlehttp/guzzle": "^7.0"
     },
     "license": "MIT",
